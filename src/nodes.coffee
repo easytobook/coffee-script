@@ -316,7 +316,7 @@ exports.Block = class Block extends Base
     o.indent  = if o.bare then '' else TAB
     o.level   = LEVEL_TOP
     @spaced   = yes
-    o.scope   = new Scope null, this, null
+    o.scope   = new Scope null, this, null, o.utilities
     # Mark given local variables in the root scope as parameters so they don't
     # end up being declared on this block.
     o.scope.parameter name for name in o.locals or []
@@ -1326,7 +1326,7 @@ exports.Code = class Code extends Base
 
   jumps: NO
 
-  makeScope: (parentScope) -> new Scope parentScope, @body, this
+  makeScope: (parentScope) -> new Scope parentScope, @body, this, parentScope.utilities
 
   # Compilation creates a new scope unless explicitly asked to share with the
   # outer scope. Handles splat parameters in the parameter list by peeking at
@@ -2155,14 +2155,14 @@ exports.If = class If extends Base
 # Constants
 # ---------
 
-UTILITIES =
+exports.UTILITIES = UTILITIES =
 
   # Correctly set up a prototype chain for inheritance, including a reference
   # to the superclass for `super()` calls, and copies of any static properties.
   extends: -> "
     function(child, parent) {
       for (var key in parent) {
-        if (#{utility 'hasProp'}.call(parent, key)) child[key] = parent[key];
+        if ({}.hasOwnProperty.call(parent, key)) child[key] = parent[key];
       }
       function ctor() {
         this.constructor = child;
@@ -2241,7 +2241,7 @@ IS_REGEX = /^\//
 # Helper for ensuring that utility functions are assigned at the top level.
 utility = (name) ->
   ref = "__#{name}"
-  Scope.root.assign ref, UTILITIES[name]()
+  Scope.root.assign ref, UTILITIES[name]() unless Scope.root.utilities
   ref
 
 multident = (code, tab) ->

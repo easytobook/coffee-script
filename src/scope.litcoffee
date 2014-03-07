@@ -20,7 +20,7 @@ as well as a reference to the **Block** node it belongs to, which is
 where it should declare its variables, and a reference to the function that
 it belongs to.
 
-      constructor: (@parent, @expressions, @method) ->
+      constructor: (@parent, @expressions, @method, @utilities = false) ->
         @variables = [{name: 'arguments', type: 'arguments'}]
         @positions = {}
         Scope.root = this unless @parent

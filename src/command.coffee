@@ -48,6 +48,7 @@ SWITCHES = [
   ['-s', '--stdio',           'listen for and compile scripts over stdio']
   ['-l', '--literate',        'treat stdio as literate style coffee-script']
   ['-t', '--tokens',          'print out the tokens that the lexer/rewriter produce']
+  ['-u', '--utilities',       'compile without utilities']
   ['-v', '--version',         'display the version number']
   ['-w', '--watch',           'watch scripts for changes and rerun commands']
 ]
@@ -65,7 +66,7 @@ optionParser = null
 # `--` will be passed verbatim to your script as arguments in `process.argv`
 exports.run = ->
   parseOptions()
-  # Make the REPL *CLI* use the global context so as to (a) be consistent with the 
+  # Make the REPL *CLI* use the global context so as to (a) be consistent with the
   # `node` REPL CLI and, therefore, (b) make packages that modify native prototypes
   # (such as 'colors' and 'sugar') work as expected.
   replCliOpts = useGlobal: yes
@@ -372,6 +373,7 @@ compileOptions = (filename, base) ->
     bare: opts.bare
     header: opts.compile and not opts['no-header']
     sourceMap: opts.map
+    utilities: opts.utilities
   }
   if filename
     if base
